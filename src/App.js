@@ -1,23 +1,61 @@
-import logo from './logo.svg';
 import './App.css';
+import { addPosts, deletePosts } from './features/Posts';
+import { useSelector, useDispatch } from 'react-redux';
+import { useState } from 'react';
 
 function App() {
+  const [name, setName] = useState('');
+  const [content, setContent] = useState('');
+
+  const postList = useSelector((state) => state.posts.value);
+
+  const dispatch = useDispatch();
+  const handleClick = () => {
+    dispatch(addPosts({
+      id: postList.length + 1,
+      name: name,
+      content: content,
+    }));
+    setName('');
+    setContent('');
+  }
+
+  const handleDelete = (id) => {
+    dispatch(deletePosts({ 
+      id: id,
+    }));
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div>
+        <h1>Reduxの掲示板</h1>
+      </div>
+      <div>
+        <input
+          type="text"
+          placeholder="名前"
+          onChange={(e) => setName(e.target.value)}
+          value={name}
+        />
+        <input
+          type="text"
+          placeholder="投稿内容"
+          onChange={(e) => setContent(e.target.value)}
+          value={content}
+        />
+        <button onClick={() => handleClick()}>投稿</button>
+        <hr />
+      </div>
+      <div className="displayPosts">
+        {postList.map((post) => (
+        <div key={post.id} className="post">
+          <h1>{post.name}</h1>
+          <h1 className="postContent">{post.content}</h1> 
+          <button onClick={() => handleDelete(post.id)}>削除</button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
